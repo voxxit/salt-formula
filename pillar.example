@@ -1,4 +1,14 @@
 salt:
+
+  # to overwrite map.jinja salt packages
+  lookup:
+    salt-master: 'salt-master'
+    salt-minion: 'salt-minion'
+    salt-syndic: 'salt-syndic'
+    salt-cloud: 'salt-cloud'
+    salt-ssh: 'salt-ssh'
+
+  # salt master config
   master:
     fileserver_backend:
       - git
@@ -9,8 +19,26 @@ salt:
     file_roots:
       base:
         - /srv/salt
+
+    # for salt-api with tornado rest interface
+    rest_tornado:
+      port: 8000
+      ssl_crt: /etc/pki/api/certs/server.crt
+      ssl_key: /etc/pki/api/certs/server.key
+      debug: False
+      disable_ssl: False
+ 
+  # salt minion config:
   minion:
+
+    # single master setup
     master: salt
+    
+    # multi master setup
+    master:
+      - salt_master_1
+      - salt_master_2
+    
     fileserver_backend:
       - git
       - roots
@@ -29,6 +57,8 @@ salt:
       test.baz:
         spam: sausage
         cheese: bread
+
+  # salt cloud config
   cloud:
     master: salt
     folders:
